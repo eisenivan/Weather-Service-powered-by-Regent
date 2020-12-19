@@ -1,0 +1,15 @@
+{
+  "name": "blog-regent-3.x",
+  "version": "1.0.0",
+  "description": "Node weather service built with Regent v3.x",
+  "main": "weather.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Ivan Eisenberg (@banjoivan)",
+  "license": "MIT",
+  "dependencies": {
+    "node-fetch": "^2.6.1",
+    "regent": "^3.3.4"
+  }
+}

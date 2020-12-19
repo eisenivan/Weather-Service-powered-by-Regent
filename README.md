@@ -4,7 +4,7 @@
 
 `regent` was built to give you an easy way of asking true or false questions of an object. This allows `regent` to help you keep your business logic organized. Let's take a quick look at the basic syntax of `regent` before we get started.
 
-```javascript
+```
 import { greaterThan } from 'regent'
 
 const IS_WARM = greaterThan('@temperature', 70)
@@ -44,7 +44,7 @@ touch weather.js
 ```
 
 _weather.js_
-```javascript
+```
 // import fetch and regent
 const fetch = require('node-fetch')
 const regent = require('regent)
@@ -57,7 +57,7 @@ Now our project is setup and we're ready to push on.
 We're going to use the [NOAA API](https://api.weather.gov/) to pull our weather data. For the purpose of this tutorial we're just going to hard-code a location into the API call. We're going to use [`node-fetch`](https://www.npmjs.com/package/node-fetch) to pull the data. `node-fetch` returns a promise. When that promise resolves we get an object with a `json` method that will return a promise and pass through our response as json.
 
 _weather.js_
-```javascript
+```
 fetch('https://api.weather.gov/gridpoints/MKX/88,63/forecast')
   .then(res => res.json())
   .then((data) => {
@@ -67,7 +67,7 @@ fetch('https://api.weather.gov/gridpoints/MKX/88,63/forecast')
 
 This response has a lot in it, but we're going to focus on a select few pieces to keep this simple. Here is an example output with a *lot* of the information removed.
 
-```json
+```
 {
   "properties": {
       "periods": [
@@ -111,31 +111,31 @@ Let's start with a rule to figure out if it is hot, cold, or moderate. We're goi
 
 First, let's import the `regent` functions we need. We will stop important all of regent and instead just import the functions we need.
 
-```javascript
+```
 const { greaterThan, lessThan } = require('regent')
 ```
 
 Now the hot rule. We will name it `HOT_TODAY`. We want to select the first period object in the `properties.periods` array and check to see if the value is above a threshold. I'm going to choose 75°, because I start to get too hot above that temperature.
 
-```javascript
+```
 const HOT_TODAY = greaterThan('@properties.periods[0].temperature', 75)
 ```
 
 Next we need a `COLD_TODAY` rule. I'll arbitrarily choose 50°. Your mileage may vary.
 
-```javascript
+```
 const COLD_TODAY = lessThan('@properties.periods[0].temperature', 50)
 ```
 
 Now we will create a `MODERATE_TODAY` rule. We can use Regent composition rules to create our rule based on `HOT_TODAY` and `COLD_TODAY` rules. We will need to import `not`, and `or` from regent along with `greaterThan` and `lessThan`. Our import state will now look like this.
 
-```javascript
+```
 { lessThan, greaterThan, not, or } = require('regent')
 ```
 
 We want `MODERATE_TODAY` to return true if it is not `HOT_TODAY` or `COLD_TODAY`. We will use `or` to figure out if it is `HOT_TODAY` or `COLD_TODAY`, and then wrap that in a `not`.
 
-```javascript
+```
 const MODERATE_TODAY = not(
   or(HOT_TODAY, COLD_TODAY)
 )
@@ -143,7 +143,7 @@ const MODERATE_TODAY = not(
 
 Alright, let's use these rules with our weather data. We're going to console.log the results of the three rules we wrote. Our `weather.js` file now looks like this.
 
-```javascript
+```
 const fetch = require('node-fetch')
 const { greaterThan, lessThan, not, or } = require('regent')
 
@@ -176,7 +176,7 @@ Alright, now we're going to write some rules to compare tomorrow's temperature t
 
 First we will create a rule named `COLDER_THAN_TODAY` which will compare the `temperature` value in each node against the `temperature` value in the first node.
 
-```javascript
+```
 const COLDER_THAN_TODAY = lessThanOrEquals('@__.temperature', '@properties.periods[0].temperature')
 ```
 
@@ -188,13 +188,13 @@ We refer to this as a _snail selector_. Regent is taking the current node of the
 
 Our `COLDER_THAN_TODAY` rule doesn't do too much on it's own, so we will now write a rule that will define which object to iterate over.
 
-```javascript
+```
 const GETTING_COLDER = every('@properties.periods', COLDER_THAN_TODAY)
 ```
 
 That is all there is to it. Now we can run the `GETTING_COLDER` rule against data and it will return true if the temperature is less than or equal to today's temperature.
 
-```json
+```
 {
   "properties": {
     "periods": [
@@ -224,7 +224,7 @@ Alright we have all our functionality written, it's time to finish up our servic
 
 We will return the value of all our rules except `COLDER_THAN_TODAY` since that is only a partial rule. Our `weather.js` file now looks something like this.
 
-```javascript
+```
 const fetch = require('node-fetch')
 const { greaterThan, lessThan, not, or, every, lessThanOrEquals } = require('regent')
 
@@ -278,7 +278,7 @@ fetch('https://api.weather.gov/gridpoints/MKX/88,63/forecast')
 
 When this is run we get a JSON response similar to this.
 
-```json
+```
 {
   HOT_TODAY: false,
   COLD_TODAY: true,

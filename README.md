@@ -1,4 +1,4 @@
-# Regent 3.x Weather App Tutorial
+# Weather Service with Regent 3.x
 
 ## What is Regent?
 
